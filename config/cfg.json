@@ -1,0 +1,29 @@
+{
+  "datadir": "./data-gisa-yrd",
+  "train": {
+    "svars": "county.tif\ntown.tif\nslope.tif",
+    "first_year": 2003,
+    "input_years": 5,
+    "output_years": 5,
+    "batch_size": 8,
+    "lr": 1e-05,
+    "sample_tiles": 5000,
+    "val_prop": 0.1
+  },
+  "test": {
+    "first_ob_year": 2006,
+    "first_sim_year": 2012,
+    "output_years": 6,
+    "prop_dir": "./prob",
+    "batch_size": 128,
+    "num_workers": 0,
+    "pth_file": "./trained_models/convlstm-t08_14_23-e19.pth"
+  },
+  "convert": {
+    "final_ob_tif": "./data-gisa-yrd/year/land_2011.tif",
+    "prob_dir": "prob",
+    "sim_dir": "sim",
+    "land_demands": "100000,100000,100000,100000,100000,100000"
+  },
+  "fom": {}
+}
