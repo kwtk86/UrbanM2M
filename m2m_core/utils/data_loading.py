@@ -94,12 +94,13 @@ class Dataset_woSplit(Dataset):
                  is_train: bool,
                  sample_count: int = 0,
                  tile_size: int = 64,
-                 tile_step: int = 64,):
+                 tile_step: int = 64,
+                 start_idx: int = 0):
         self.data_dir = data_dir
         range_tif = os.path.join(data_dir, 'range.tif')
         assert pex(range_tif), ""
         self.range_arr = open_single_tif(range_tif)
-        self.inputs   = [pj(data_dir, 'year', tif) for tif in inputs]
+        self.inputs   = inputs
         self.spa_vars = [pj(data_dir, 'vars', tif) for tif in spa_vars]
         nonexisting_rasters = []
         for input_tif in self.inputs + self.spa_vars:
@@ -120,7 +121,11 @@ class Dataset_woSplit(Dataset):
         self.restriction_arr = self.get_restriction_arr()
         self.tile_size = tile_size
         self.tile_step = tile_step
+        self.start_idx = start_idx
+
         self.unique_blocks = self.get_unique_blocks()
+        # print(self.unique_blocks[:2])
+        # print(self.start_idx)
         if is_train:
             if sample_count>10:
                 self.sampled_blocks = random.sample(self.unique_blocks, sample_count)
@@ -142,11 +147,11 @@ class Dataset_woSplit(Dataset):
     def get_unique_blocks(self):
         region = self.range_arr
         restriction = self.restriction_arr
-        tile_step, tile_size = self.tile_step, self.tile_size
+        tile_step, tile_size, start_idx = self.tile_step, self.tile_size, self.start_idx
         max_start_row, max_start_col = region.shape[0], region.shape[1]
         block_rcs = []
-        for i, row_end in enumerate(range(tile_step, max_start_row, tile_step)):
-            for j, col_end in enumerate(range(tile_step, max_start_col, tile_step)):
+        for i, row_end in enumerate(range(tile_step + start_idx, max_start_row, tile_step)):
+            for j, col_end in enumerate(range(tile_step + start_idx, max_start_col, tile_step)):
                 row_start, col_start = row_end - tile_size, col_end - tile_size
                 region_block = region[row_start:row_end, col_start:col_end]
                 restriction_block = restriction[row_start:row_end, col_start:col_end]

@@ -119,7 +119,7 @@ def check_binary(ras: np.ndarray, ndv: float, ras_name: str):
     ras_values = np.unique(ras).tolist()
     if ndv !=0 and ndv in ras_values:
         ras_values.pop(ras_values.index(ndv))
-    if set(ras_values)!={0,1}:
+    if set(ras_values)>{0,1}:
         raise RuntimeError(f'Invalid raster values in {ras_name}')
 
 def check_normalize(ras: np.ndarray, ndv: float, ras_name: str):
@@ -145,6 +145,7 @@ def check_rasters(raster_arrays: dict, spa_vars: dict):
             check_normalize(arr[0], arr[1], rname)
         else:
             check_binary(arr[0], arr[1], rname)
+        print('checking', rname)
     # # 检查range.tif的掩膜范围是否最小。
     range_mask = (raster_arrays['range'][0]==1)
     range_mask_sum = range_mask.sum()
@@ -165,7 +166,7 @@ def check_rasters(raster_arrays: dict, spa_vars: dict):
         for r in invalid_ras:
             print(f'Mask range of {r} is too small')
         raise RuntimeWarning('Invalid mask range')
-    return "finish checking, rasters are valid for model training and testing"
+    # return "finish checking, rasters are valid for model training and testing"
 
 
 def read_rasters(raster_paths: dict) -> dict:
@@ -301,7 +302,6 @@ def split_check_main(spa_vars0: list = [r'D:\zzh2022\15.convlstm\data-gisa-whn/v
     year_range = range(st_year, ed_year+1)
     raster_paths = get_ras_paths(year_range, data_dir, spa_vars)
     rasters = read_rasters(raster_paths)
-    checking_info = check_rasters(rasters, spa_vars)
-    return checking_info
+    check_rasters(rasters, spa_vars)
 
 

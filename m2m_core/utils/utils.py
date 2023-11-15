@@ -80,9 +80,8 @@ class GDALImage:
         dataset_ndv = band.GetNoDataValue()
         arr = band.ReadAsArray()
         arr = np.where(arr == dataset_ndv, no_data_value, arr).astype(np.float32)
-        # arr = band.ReadAsArray().astype(np.float32)
         if return_ndv:
-            return arr, dataset_ndv
+            return arr, no_data_value
         else:
             return arr
     

@@ -4,14 +4,18 @@ from .utils.future_land import *
 import glob
 
 def prob2sim_main(final_gt_tif: str,
+                  years_to_sim: int,
                   prob_dir: str,
                   sim_dir: str,
                   land_demands: list,
                   restriction_tif: str,
-                  range_tif: str):
+                  range_tif: str,
+                  autoreg: bool = False):
     """
 
     Args:
+        autoreg:
+        years_to_sim:
         final_gt_tif: 最后一年的城市用地二值栅格路径（真值） gt的意思是ground truth
         prob_dir:     测试阶段获得的转换概率栅格保存的文件夹
         sim_dir:      生成的模拟结果保存文件夹
@@ -22,9 +26,16 @@ def prob2sim_main(final_gt_tif: str,
     Returns:
 
     """
-    try:  
-        prob_tifs = glob.glob(f'{prob_dir}/prob*.tif')
-        prob_tifs.sort(key=lambda x:int(x.split('.tif')[0].split('_')[-1]))
+    try:
+        first_prob_year = int(os.path.basename(final_gt_tif)[:-4].split('_')[-1]) + 1
+    except:
+        raise RuntimeError('Invalid final gt tif')
+    try:
+        prob_tifs = []
+        for year in range(first_prob_year, first_prob_year + years_to_sim):
+            prob_tifs.append(f'{prob_dir}/prob_{year}.tif')
+        # prob_tifs = glob.glob(f'{prob_dir}/prob*.tif')
+        # prob_tifs.sort(key=lambda x:int(x.split('.tif')[0].split('_')[-1]))
     except:
         raise RuntimeError(f'Invalid prob tifs in {prob_dir}')
 
@@ -49,11 +60,19 @@ def prob2sim_main(final_gt_tif: str,
 
     if not os.path.exists(sim_dir):
         os.makedirs(sim_dir)
-
-    generate_simulation(prob_arrs, 
-                        final_gt_arr,
-                        restriction_arr,
-                        range_arr,
-                        saver,
-                        sim_tifs,
-                        land_demands)
+    if autoreg:
+        generate_simulation_autoreg(prob_arrs,
+                                    final_gt_arr,
+                                    restriction_arr,
+                                    range_arr,
+                                    saver,
+                                    sim_tifs,
+                                    land_demands)
+    else:
+        generate_simulation(prob_arrs,
+                            final_gt_arr,
+                            restriction_arr,
+                            range_arr,
+                            saver,
+                            sim_tifs,
+                            land_demands)

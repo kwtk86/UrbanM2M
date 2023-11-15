@@ -65,13 +65,15 @@ def gr_split(data_dir,
                          int(ed_year))
     except Exception as e:
         gr.Warning(str(e))
+        return
     out_info = get_datadir_info(data_dir)
     range_img = rangetif2img(data_dir)
     return out_info, range_img
 
 
 def gr_p2s(data_dir: str,
-           final_gt_tif,
+           final_gt_tif: str,
+           years_to_sim: int,
            prob_dir: str,
            sim_dir: str,
            land_demands: str,
@@ -89,6 +91,7 @@ def gr_p2s(data_dir: str,
     range_tif = os.path.join(data_dir, 'range.tif')
     try:
         prob2sim_main(final_gt_tif,
+                      years_to_sim,
                       prob_dir,
                       sim_dir,
                       land_demands,
@@ -151,7 +154,7 @@ def gr_test(start_year: int,
                   data_dir,
                   model_path.name,
                   prob_dir,
-                  64, 48,
+                  64, 48, 0,
                   batch_size,
                   num_workers)
         return 'finish testing'
@@ -196,9 +199,9 @@ css = """
 #maintabs {flex: 65%}
 #father_row {display: flex; margin-top: 3%}
 
-#test_year_col {flex: 10%; min-width: 50px !important}
-#test_para_col {flex: 10%; min-width: 50px !important}
-#test_file_col {flex: 40%; min-width: 50px !important}
+#test_year_col {flex: 10%}
+#test_para_col {flex: 10%}
+#test_file_col {flex: 40%}
 #test_main_row {display: flex-inline}
 
 
@@ -277,17 +280,17 @@ with gr.Blocks(theme = theme, css = css) as demo:
                     with gr.TabItem("Test model"):
                         with gr.Blocks():
                             with gr.Row(elem_id='test_main_row'):
-                                with gr.Column(elem_id='test_year_col'):
+                                with gr.Column(elem_id='test_year_col', min_width = 50):
                                     te_styear_number = gr.Number(label='First observed year', minimum=1900, value=2006)
                                     te_fsyear_number = gr.Number(label='First year to simulate', minimum=1900, value=2012)
                                     te_outlen_number = gr.Number(label='Count of years to simulate', minimum=0, value=6)
-                                with gr.Column(elem_id='test_file_col'):
+                                with gr.Column(elem_id='test_file_col', min_width=50):
                                     with gr.Row():
                                         te_pdir_text = gr.Textbox(label='Dir for probability maps')
                                         te_pdir_btn  = gr.Button('Select dir for saving probability maps')
                                     te_pdir_btn.click(gr_set_dir, outputs=[te_pdir_text])
                                     te_model_file = gr.File(label='pth model file', file_types=['.pth'])
-                                with gr.Column(elem_id='test_para_col'):
+                                with gr.Column(elem_id='test_para_col', min_width=50):
                                     te_bsize_number = gr.Number(value=128, label='Batch size', minimum=0)
                                     te_nworker_number = gr.Number(value=0, label='num_worker for torch.loader', minimum=0)
 
@@ -318,12 +321,15 @@ with gr.Blocks(theme = theme, css = css) as demo:
                                         p2s_sdir_btn  = gr.Button('Select dir for simulated maps')
                                         p2s_sdir_btn.click(gr_set_dir, outputs=[p2s_sdir_text])
                                 with gr.Column():
+                                    p2s_years_number = gr.Number(label='Count of years to be simulated', minimum=0,
+                                                                 maximum=100,)
                                     p2s_demand_text = gr.Textbox(label='Land demands, seperated by comma')
                                     p2s_out_text    = gr.Textbox(label='Info')
                                     p2s_exe_button  = gr.Button('Convert')
                                 p2s_exe_button.click(gr_p2s,
                                                      [dr_datadir_text,
                                                       p2s_gt_text,
+                                                      p2s_years_number,
                                                       p2s_pdir_text,
                                                       p2s_sdir_text,
                                                       p2s_demand_text], p2s_out_text)
