@@ -34,7 +34,7 @@ def set_random_arr(template:np.ndarray) -> np.ndarray:
     tshape = template.shape
     rd_arr = np.random.rand(tshape[0], tshape[1])
     e_arr  = -np.log(rd_arr)
-    rd_arr  = np.power(e_arr, 1.75)
+    rd_arr  = np.power(e_arr, 1)
 
     rec_arr = template * rd_arr
     return rec_arr

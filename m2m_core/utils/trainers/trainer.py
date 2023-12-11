@@ -135,24 +135,19 @@ class Trainer:
         with tqdm(total=len(loader), ncols=75) as pbar:
             with torch.no_grad():
                 for rc, spa_vars, x in loader:
-                    loss = self.model_forward(x, spa_vars, [])
+                    loss = self.model_forward(x, spa_vars)
                     pbar.update(1)
                     pbar.set_postfix(
                         {'loss': loss.item(), 'avg loss': tot_loss / pbar.n})
                     tot_loss += float(loss.item())
         print('finish validation')
 
-    def model_forward(self, x0: torch.Tensor, spa_vars: torch.Tensor, mask: list = []):
-        # torch.cuda.empty_cache()
+    def model_forward(self, x0: torch.Tensor, spa_vars: torch.Tensor):
         spa_vars = spa_vars.to(self.device)
         x = x0.to(self.device)
-        if not mask:
-            mask = self.get_teacher_masker(x)
-        # input  00 01 02 03 04 05
-        # output 06 07 08 09 10 11
+        mask = self.get_teacher_masker(x)
         gn_imgs = self.model(x, spa_vars, mask)
-
-        gt_imgs = x[:, 1:]
+        gt_imgs = x[:, 1:, :1]
         loss = self.criterion(gn_imgs, gt_imgs)
         return loss
 

@@ -2,11 +2,18 @@ import os, sys
 from os.path import (exists as pex, join as pj)
 from .config import *
 from .model import CC_ConvLSTM
-from .utils.data_loading import TrainDataset, Dataset_woSplit
+from .utils.data_loading import CommonDataset
 from .utils.trainers.trainer import Trainer
 import argparse
 from datetime import datetime
 import glob
+from typing import Literal
+
+try:
+    from .utils.landscape_config import PatchSize
+except:
+    pass
+
 
 from collections import defaultdict
 
@@ -29,8 +36,12 @@ __all__ = ['train_main', 'train_model']
 
 def check_args(args):
 
-    args.input_tifs   = [f'land_{year}.tif' for year in range(args.start_year, args.start_year + args.in_len + args.out_len, 1)]
-    args.band = 1 + len(args.spa_var_tifs)
+    args.input_tifs   = [os.path.join(args.data_dir, 'year', f'land_{year}.tif') for year in
+                         range(args.start_year, args.start_year + args.in_len + args.out_len, 1)]
+    if args.dataset_type == 'default':
+        args.band = 1 + len(args.spa_var_tifs)
+    elif args.dataset_type == 'landscape':
+        args.band = 2 + len(args.spa_var_tifs)
 
     formatted_date = datetime.now().strftime("%m_%d_%H_%M")
     args.model_name = f'convlstm-t{formatted_date}'
@@ -40,9 +51,6 @@ def check_args(args):
 
 
 
-# def assert_args(args):
-#     assert args.sample_count <= len(os.listdir(args.tile_dir)), "sample count smaller than valid tile count"
-
 def train_main(start_year:   int,
                in_len:       int,
                out_len:      int,
@@ -51,7 +59,8 @@ def train_main(start_year:   int,
                batch_size:   int,
                lr:           float,
                sample_count: int,
-               val_prop:     float):
+               val_prop:     float,
+               dataset_type: Literal['default', 'landscape'] = 'default'):
 
     assert 0<val_prop<1, \
         "Invalid val_prop, required 0<val_prop<1"
@@ -69,6 +78,9 @@ def train_main(start_year:   int,
         "Invalid batch_size, required batch_size>1900 and being integer"
     assert sample_count>100 and round(sample_count)==sample_count, \
         "Invalid sample_count, required sample_count>100 and being integer"
+    assert dataset_type in ['default', 'landscape', 'none_spa_vars'], ""
+
+
 
     edirs = [data_dir]
     for edir in edirs:
@@ -88,8 +100,7 @@ def train_main(start_year:   int,
     args.in_len = in_len
     args.out_len = out_len
     args.start_year = start_year
-    # args.tile_dir = os.path.join(data_dir, 'tile_train')
-    args.tile_dir = os.path.join(data_dir)
+    args.data_dir =data_dir
     args.spa_var_tifs = spa_vars
     args.tile_size = 64
 
@@ -105,7 +116,7 @@ def train_main(start_year:   int,
     args.eta_decay = 0.015
     args.model_dir = 'trained_models'
     args.num_workers = 0
-
+    args.dataset_type = dataset_type
     args = check_args(args)
 
     # assert_args(args)
@@ -121,13 +132,26 @@ def train_model(args):
                                     in_len      = args.in_len,
                                     out_len     = args.out_len)
     model = model.cuda()
-    dataset = Dataset_woSplit(args.tile_dir,
-                              args.input_tifs,
-                              args.spa_var_tifs,
-                              True,
-                              args.sample_count,
-                              args.tile_size,
-                              args.tile_size)
+    if args.dataset_type == 'default':
+        dataset = CommonDataset(args.data_dir,
+                                args.input_tifs,
+                                args.spa_var_tifs,
+                                True,
+                                args.sample_count,
+                                args.tile_size,
+                                args.tile_size)
+    elif args.dataset_type == 'landscape':
+        raise NotImplementedError()
+        # dataset = DatasetWithLandscape([PatchSize()],
+        #                                args.data_dir,
+        #                                args.input_tifs,
+        #                                args.spa_var_tifs,
+        #                                True,
+        #                                args.sample_count,
+        #                                args.tile_size,
+        #                                args.tile_size)
+    else:
+         raise NotImplementedError()
     t = Trainer(model, args, dataset, device)
     t.loop()
 

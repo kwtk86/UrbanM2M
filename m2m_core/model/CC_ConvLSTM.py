@@ -151,7 +151,7 @@ class CC_ConvLSTM(Module):
                 mask: list,
                 test: bool = False
                 ) -> torch.Tensor:
-        # use_mask = True if mask else False
+        # for saving GPU memory
         inputs = torch.cat((x[:, 0], spa_vars), 1)
         x_gen = self.forward_step(inputs, init_hidden=True)
         gn_imgs = [x_gen]

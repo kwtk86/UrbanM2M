@@ -2,8 +2,10 @@ from .config import *
 
 import argparse
 import os, sys
+from typing import Literal
 from os.path import join as pj
-from .utils.data_loading import Dataset_woSplit
+from .utils.data_loading import CommonDataset
+# from .utils.landscape_config import PatchSize
 from .utils.future_land import *
 from .utils.trainers.tester import *
 from .model import CC_ConvLSTM
@@ -15,7 +17,6 @@ __all__ = ['test_main', 'test_autoreg_main']
 
 def check_args(args):
 
-    # args.tile_dir = os.path.join(args.data_root_dir, f'tile_test')
     args.range_tif = os.path.join(args.data_root_dir, 'range.tif')
 
     
@@ -40,7 +41,9 @@ def test_main(start_year: int,
               tile_step: int,
               tile_start_idx: int = 0,
               batch_size: int = 128,
-              num_workers: int = 0):
+              num_workers: int = 0,
+              strategy: Literal['mean', 'max'] = 'mean',
+              dataset_type: Literal['default', 'landscape'] = 'default'):
     """
     案例：使用2006-2011年作为输入，生成2012-2017的转换概率图
     Args:
@@ -99,8 +102,11 @@ def test_main(start_year: int,
     # args.tile_step = 48
     args.edge_width = 4
 
+
     args = check_args(args)
     args.autoreg = False
+    args.strategy = strategy
+    args.dataset_type = dataset_type
     test_model(args)
 
 
@@ -116,7 +122,8 @@ def test_autoreg_main(start_year: int,
                       tile_step: int = 48,
                       strategy: str = 'mean',
                       batch_size: int = 128,
-                      num_workers: int = 0):
+                      num_workers: int = 0,
+                      dataset_type: Literal['default', 'landscape'] = 'default'):
 
     if not os.path.exists(sim_dir):
         os.makedirs(sim_dir)
@@ -158,10 +165,12 @@ def test_autoreg_main(start_year: int,
                           prob_dir,
                           tile_size,
                           tile_step,
-                          32 * (year_idx % 2),
+                          # 32 * (year_idx % 2)
+                          0,
                           strategy,
                           batch_size,
-                          num_workers)
+                          num_workers,
+                          dataset_type)
 
         if start_year == year:
             final_gt_tif = os.path.join(data_dir,
@@ -195,7 +204,8 @@ def test_year_autoreg(start_year: int,
                       tile_start_idx: int = 0,
                       strategy: str = 'mean',
                       batch_size: int = 128,
-                      num_workers: int = 0):
+                      num_workers: int = 0,
+                      dataset_type: Literal['default', 'landscape'] = 'default'):
     """
     案例：使用2006-2011年作为输入，生成2012-2017的转换概率图
     Args:
@@ -250,6 +260,7 @@ def test_year_autoreg(start_year: int,
                       range(args.start_year + args.in_len, args.start_year + args.in_len + args.out_len)]
     args.use_mix = True
     args.autoreg = True
+    args.dataset_type = dataset_type
     args.strategy = strategy
     test_model(args)
 
@@ -261,7 +272,10 @@ def test_model(args):
 
     model_info = torch.load(args.model_path)
     args.spa_var_tifs = model_info['spa_vars']
-    args.band = 1 + len(args.spa_var_tifs)
+    if args.dataset_type == 'default':
+        args.band = 1 + len(args.spa_var_tifs)
+    elif args.dataset_type == 'landscape':
+        args.band = 2 + len(args.spa_var_tifs)
     print(f'Model using spatial variable: {",".join(args.spa_var_tifs)}')
     print(f'Model filter size: {model_info["filter_size"]}')
     print(f'Model nlayers: {model_info["nlayers"]}')
@@ -275,14 +289,30 @@ def test_model(args):
     model.out_len = args.out_len
     model.load_state_dict(model_info['state_dict'])
     model.cuda()
-    dataset = Dataset_woSplit(args.data_root_dir,
-                             args.input_tifs,
-                             args.spa_var_tifs,
-                             False,
-                             0,
-                             args.tile_size,
-                             args.tile_step,
-                             args.tile_start_idx)
+    if args.dataset_type == 'default':
+        dataset = CommonDataset(args.data_root_dir,
+                                args.input_tifs,
+                                args.spa_var_tifs,
+                                False,
+                                0,
+                                args.tile_size,
+                                args.tile_step,
+                                args.tile_start_idx)
+    elif args.dataset_type == 'landscape':
+        raise NotImplementedError()
+        # dataset = DatasetWithLandscape(
+        #     [PatchSize()],
+        #     args.data_root_dir,
+        #     args.input_tifs,
+        #     args.spa_var_tifs,
+        #     False,
+        #     0,
+        #     args.tile_size,
+        #     args.tile_step,
+        #     args.tile_start_idx
+        #     )
+    else:
+        raise NotImplementedError()
 
     tester = Tester(model, args, dataset,
                     range_arr, device, False, args.strategy)
