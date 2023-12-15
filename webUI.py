@@ -258,7 +258,8 @@ with gr.Blocks(theme = theme, css = css) as demo:
                                     tr_select_svars_btn = gr.Button('Select spatial variables for training')
                                 with gr.Blocks(title='Input data setting'):
                                     with gr.Column():
-                                        tr_styear_number = gr.Number(label='First observed year', minimum=1900, value=2000)
+                                        tr_styear_number = gr.Number(label='First input year for training',
+                                                                     minimum=1900, value=2000)
                                         tr_inlen_number = gr.Number(label='Count of years to input', minimum=0, value=6)
                                         tr_outlen_number = gr.Number(label='Count of years to simulate', minimum=0, value=6)
                                 with gr.Blocks(title='Parameters'):
@@ -281,8 +282,9 @@ with gr.Blocks(theme = theme, css = css) as demo:
                         with gr.Blocks():
                             with gr.Row(elem_id='test_main_row'):
                                 with gr.Column(elem_id='test_year_col', min_width = 50):
-                                    te_styear_number = gr.Number(label='First observed year', minimum=1900, value=2006)
-                                    te_fsyear_number = gr.Number(label='First year to simulate', minimum=1900, value=2012)
+                                    te_styear_number = gr.Number(label='First input year for testing', minimum=1900,
+                                                                 value=2006)
+                                    te_fsyear_number = gr.Number(label='First output year', minimum=1900, value=2012)
                                     te_outlen_number = gr.Number(label='Count of years to simulate', minimum=0, value=6)
                                 with gr.Column(elem_id='test_file_col', min_width=50):
                                     with gr.Row():
@@ -309,8 +311,8 @@ with gr.Blocks(theme = theme, css = css) as demo:
                             with gr.Row():
                                 with gr.Column():
                                     with gr.Row():
-                                        p2s_gt_text = gr.Text(label='Final observed landmap')
-                                        p2s_gt_btn  = gr.Button('Select final observed landmap')
+                                        p2s_gt_text = gr.Text(label='Final input land map')
+                                        p2s_gt_btn  = gr.Button('Select final input land map')
                                         p2s_gt_btn.click(gr_set_tif, outputs=[p2s_gt_text])
                                     with gr.Row():
                                         p2s_pdir_text = gr.Textbox(label='Probability map dir')
@@ -337,16 +339,16 @@ with gr.Blocks(theme = theme, css = css) as demo:
                 with gr.Tabs():
                     with gr.TabItem("Calculate FoMs"):
                         with gr.Row():
-                            gr_fom_sttif_text = gr.Text(label='tif of the start year')
-                            gr_fom_sttif_btn = gr.Button('Select observed tif of the start year')
+                            gr_fom_sttif_text = gr.Text(label='Final input land map')
+                            gr_fom_sttif_btn = gr.Button('Select final input land map')
                             gr_fom_sttif_btn.click(gr_set_tif, inputs=[], outputs=[gr_fom_sttif_text])
                         with gr.Row():
-                            gr_fom_gttif_text = gr.Text(label='observed tif of the target year')
-                            gr_fom_gttif_btn = gr.Button('Select observed tif of the target year')
+                            gr_fom_gttif_text = gr.Text(label='Observed land map of the target year')
+                            gr_fom_gttif_btn = gr.Button('Select observed land map of the target year')
                             gr_fom_gttif_btn.click(gr_set_tif, inputs=[], outputs=[gr_fom_gttif_text])
                         with gr.Row():
-                            gr_fom_simtif_text = gr.Text(label='simulated tif of the target year')
-                            gr_fom_simtif_btn = gr.Button('Select simulated tif of the target year')
+                            gr_fom_simtif_text = gr.Text(label='Simulated land map of the target year')
+                            gr_fom_simtif_btn = gr.Button('Select simulated land map of the target year')
                             gr_fom_simtif_btn.click(gr_set_tif, inputs=[], outputs=[gr_fom_simtif_text])
                         with gr.Row():
                             gr_fom_info_text = gr.Text(label='FoM')
