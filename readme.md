@@ -30,13 +30,13 @@ If you want to **train your own model**, please see the next section for referen
 
 但在OpenGMS，用户仅可以调用已经训练好的模型进行模拟而不能自己训练模型。如果希望**训练模型**，请参考下一节。
 
-See [OpenGMS-UrbanM2M]() for detail.
+See [OpenGMS-UrbanM2M](https://geomodeling.njnu.edu.cn/modelItem/413abfee-d4a5-4272-bee9-5a1f8cd94fcf) for detail.
 
 ## Use UrbanM2M with Gradio GUI in your device 
 
 You can also deploy and use UrbanM2M locally.
 
-See [UrbanM2M用户手册中文版]() or [UrbanM2M user manual-en]() for detail.
+See [UrbanM2M用户手册中文版](https://github.com/kwtk86/UrbanM2M/blob/main/UrbanM2M-%E7%94%A8%E6%88%B7%E6%89%8B%E5%86%8Cv1.pdf) or [UrbanM2M user manual-en]() for detail.
 
 
 ## Download example data 
