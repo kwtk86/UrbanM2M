@@ -20,7 +20,7 @@ def gms_m2m_main(data_dir: str,
                  sim_dir: str,
                  land_demands: list,
                  batch_size: int,
-                 num_workers: int):
+                 num_workers: int) -> None:
     """
     GMS平台使用的M2M主程序接口
     以使用2006-2011的数据模拟2012-2017的变化情况进行说明
@@ -54,3 +54,27 @@ def gms_m2m_main(data_dir: str,
     prob2sim_main(final_gt_tif, out_len,
                   prob_dir, sim_dir, land_demands,
                   restr_tif, range_tif, False)
+
+
+from .FoM import calc_fom
+
+def fom_validation(start_tif: str, ground_truth_tif: str, simulated_tif: str) -> float:
+    """
+    OpenGMS平台进行FoM验证的代码接口
+    比如运行模型时，使用2006-2011的数据模拟了2012-2017的城市扩张
+    则fom基于 2011年真实用地数据（最后一个已知年份） 2017年真实用地数据 及 2017年模拟结果（目标年份）进行计算
+
+    基本原理是：基于 2011年真实用地数据 2017年真实用地数据，得到真实城市扩张情况
+               再基于2011年真实用地数据 2017年模拟结果进行计算 得到模拟的城市扩张情况
+               对比真实与模拟，计算FOM
+
+    Args:
+        start_tif:        最后一个已知年份的真实用地栅格
+        ground_truth_tif: 目标年份的真实用地栅格
+        simulated_tif:    目标年份的用地模拟结果
+
+    Returns:
+        计算结果
+    """
+    fom = calc_fom(start_tif, ground_truth_tif, simulated_tif)
+    return fom

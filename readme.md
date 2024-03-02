@@ -1,10 +1,13 @@
 # UrbanM2M
 
-A ConvLSTM-based model for simulating future urban expansion.
-If you find this work useful, please cite our work at [UrbanM2M-IJGIS]()
+This is the official repository of 
+**“A Maps-to-Maps approach forsimulating urban land expansion based onconvolutional long short-term memoryneural networks**
+
+UrbanM2M is a ConvLSTM-based model for simulating future urban expansion.
+If you find this work useful, please cite our work at [UrbanM2M-IJGIS](https://www.tandfonline.com/doi/full/10.1080/13658816.2023.2298296)
 
 基于ConvLSTM神经网络的城市扩张模拟模型。
-如果该模型对你有帮助，请引用我们的论文 [UrbanM2M-IJGIS]()。
+如果该模型对你有帮助，请引用我们的论文 [UrbanM2M-IJGIS](https://www.tandfonline.com/doi/full/10.1080/13658816.2023.2298296)。
 
 
 
@@ -33,114 +36,10 @@ See [OpenGMS-UrbanM2M]() for detail.
 
 You can also deploy and use UrbanM2M locally.
 
-See [UrbanM2M用户手册中文版]() or [UrbanM2M user manual-en]() for detail
+See [UrbanM2M用户手册中文版]() or [UrbanM2M user manual-en]() for detail.
 
 
-[//]: # ()
-[//]: # (## Code with UrbanM2M package)
+## Download example data 
 
-[//]: # ()
-[//]: # ()
-[//]: # (### Development environment configuration)
+[百度网盘](https://pan.baidu.com/s/17Rj-qi28VVWd3HTqhqwheQ?pwd=81g9)
 
-[//]: # ()
-[//]: # (**Note**: The following process has been validated in both Windows &#40;for all the models&#41; and Centos7 &#40;for UrbanM2M&#41;, but haven't been validated in MacOS yet.)
-
-[//]: # ()
-[//]: # (**First**, install a [Miniconda]&#40;https://docs.conda.io/en/latest/miniconda.html#installing&#41; or [Anaconda]&#40;https://www.anaconda.com/&#41; package manager.)
-
-[//]: # ()
-[//]: # (**Second**, run the following commands in cmd or bash to create a new virtual environment for UrbanM2M.)
-
-[//]: # ()
-[//]: # (``` bash)
-
-[//]: # (conda create -n urbanm2m python==3.10.0)
-
-[//]: # (```)
-
-[//]: # ()
-[//]: # (**Third**, install PyTorch)
-
-[//]: # ()
-[//]: # (``` bash)
-
-[//]: # (conda activate urbanm2m)
-
-[//]: # (conda install pytorch==1.11.0 cudatoolkit=11.3 -c pytorch)
-
-[//]: # (```)
-
-[//]: # ()
-[//]: # (**Fourth**, install GDAL-Python&#40;version>=3.0.0&#41;)
-
-[//]: # ()
-[//]: # (If you are using Linux, run ```conda install gdal``` directly to install it.)
-
-[//]: # ()
-[//]: # (If you are using Windows, it is better to install GDAL-Python using the .whl file in the UrbanM2M folder.)
-
-[//]: # (``` bash)
-
-[//]: # (cd UrbanM2M)
-
-[//]: # (pip install GDAL-3.4.3-cp310-cp310-win_amd64.whl)
-
-[//]: # (``` )
-
-[//]: # ()
-[//]: # ()
-[//]: # (**Finally**, run ```pip install requirements.txt``` to install other dependency packages.)
-
-[//]: # ()
-[//]: # (**Note**: please ensure all the procedures above are run in the **urbanm2m** Virtual Environment)
-
-[//]: # ()
-[//]: # (### UrbanM2M model implementation)
-
-[//]: # ()
-[//]: # ()
-[//]: # (#### **Training your model**)
-
-[//]: # (cd ./m2mCode)
-
-[//]: # (Run ```train_gui.py``` using an IDE directly or run the following command in cmd or bash &#40;**recommended**&#41;.)
-
-[//]: # (```bash)
-
-[//]: # (python train_gui.py --start_year 2000 --in_len 6 --out_len 6 --data_dir ../data-yrd --spa_vars county.tif town.tif slope.tif --batch_size 8 --lr 0.00005 --sample_count 5000 --val_prop 0.15)
-
-[//]: # (```)
-
-[//]: # ()
-[//]: # (**Note**: the parameters are modifiable. Especially, check your GPU memory to set ```batch_size```. Per batch size needs about 1.3GB GPU memory.)
-
-[//]: # ()
-[//]: # (**Note**: it is recommended to end training after 20 epochs. The trained models will be storaged in ```trained_models``` folder.)
-
-[//]: # ()
-[//]: # (#### **Testing your model**)
-
-[//]: # ()
-[//]: # (After finishing training, modify the parameters and run ```test_gui.py``` using an IDE directly or run the following command in cmd or bash &#40;**recommended**&#41;.)
-
-[//]: # ()
-[//]: # (``` bash)
-
-[//]: # (python test_gui.py --start_year 2006 --in_len 6 --out_len 6 --height 64 --block_step 38 --edge_width 4 --spa_vars slope\|town\|county --model_type gba --region gba --data_root_dir ../data-gisa-gba --log_file ./mylog/gba.csv --model_path ./trained_models/gba-fs5-e23-p.pth --run_model True --numworkers 0 --batch_size 100)
-
-[//]: # (```)
-
-[//]: # ()
-[//]: # (Aftering finish testing, results can be found in ```data-gisa-gba/sim``` folder.)
-
-[//]: # ()
-[//]: # (**Note**: the parameter model_path must be modified according to name of your trained model.  )
-
-[//]: # ()
-[//]: # (**Note**: check your GPU memory to set ```batch_size```. Per batch size needs about 40MB GPU memory when testing.)
-
-[//]: # ()
-[//]: # (**Note**: a trained model has been prepared in the ```trained_models``` folder, you can directly test this model without training.)
-
-[//]: # ()
