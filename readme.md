@@ -36,10 +36,11 @@ See [OpenGMS-UrbanM2M](https://geomodeling.njnu.edu.cn/modelItem/413abfee-d4a5-4
 
 You can also deploy and use UrbanM2M locally.
 
-See [UrbanM2M用户手册中文版](https://github.com/kwtk86/UrbanM2M/blob/main/UrbanM2M-%E7%94%A8%E6%88%B7%E6%89%8B%E5%86%8Cv1.pdf) or [UrbanM2M user manual-en]() for detail.
+See [UrbanM2M用户手册中文版](https://github.com/kwtk86/UrbanM2M/blob/main/UrbanM2M-%E7%94%A8%E6%88%B7%E6%89%8B%E5%86%8Cv1.pdf) or [UrbanM2M user manual-en](https://github.com/kwtk86/UrbanM2M/blob/main/UrbanM2M-User%20manual%20en.pdf) for detail.
 
 
 ## Download example data 
 
 [百度网盘](https://pan.baidu.com/s/17Rj-qi28VVWd3HTqhqwheQ?pwd=81g9)
+[Google Drive](https://drive.google.com/drive/folders/1X1AQGTqG46JMT00DGQZF7JwEk0NUxQx9?usp=sharing)
 
